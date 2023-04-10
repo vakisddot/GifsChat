@@ -34,13 +34,6 @@ public class GifsChatSystem : ModSystem
 
         var stream = AwaitingStreams.Dequeue();
 
-        // TEMP
-        //using (var fileStream = File.Create(DebugFilePath + rand.Next(0, 100000) + ".png"))
-        //{
-        //    stream.Seek(0, SeekOrigin.Begin);
-        //    stream.CopyTo(fileStream);
-        //}
-
         _awaitingTextures.Enqueue(Texture2D.FromStream(Main.instance.GraphicsDevice, stream));
         stream.Dispose();
     }

@@ -18,13 +18,13 @@ public class GifSnippet : TextSnippet, IImageSnippet
 
     private Texture2D[] _frames;
 
-    public GifSnippet(Texture2D[] frames, bool halfDelay)
+    public GifSnippet(Texture2D[] frames)
     {
         _deathWatch = Stopwatch.StartNew();
         _frames = frames;
         Scale = 1f;
 
-        _framesUntilFrameUpdate = (short)(GifDelay * (halfDelay ? 1 : 2));
+        _framesUntilFrameUpdate = (short)(GifDelay * (GifsChatMod.ClientConfig.SkipEverySecondFrame ? 2 : 1));
 
         int width = _frames[0].Width;
         int height = _frames[0].Height;

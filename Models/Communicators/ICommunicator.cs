@@ -7,5 +7,5 @@ namespace GifsChat.Models.Communicators;
 public interface ICommunicator
 {
     Task<HttpResponseMessage> GetResponse(string query);
-    Type ResultType { get; }
+    void HandleQuery(string query);
 }

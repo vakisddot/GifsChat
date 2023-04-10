@@ -1,4 +1,7 @@
-﻿using GifsChat.Utils.Exceptions;
+﻿using GifsChat.Configs;
+using GifsChat.Core;
+using GifsChat.Utils.Exceptions;
+using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -62,10 +65,14 @@ public static class ModUtils
                 var frameStream = new MemoryStream();
                 await image.SaveAsGifAsync(frameStream);
 
+                // We skip adding every second frame if frameskip is on
+                if (GifsChatMod.ClientConfig.SkipEverySecondFrame && i % 2 == 1)
+                    continue;
+                
                 frames.Add(frameStream);
             }
         }
-
+        
         return frames.ToArray();
     }
 

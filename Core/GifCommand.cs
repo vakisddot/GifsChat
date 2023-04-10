@@ -1,10 +1,11 @@
 ﻿using Terraria.ModLoader;
 using GifsChat.Utils;
-using GifsChat.Models.Json;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using GifsChat.Utils.Exceptions;
 using GifsChat.Models.Communicators;
+using Terraria.ID;
+using Terraria;
 
 namespace GifsChat.Core;
 public class GifCommand : ModCommand
@@ -17,7 +18,7 @@ public class GifCommand : ModCommand
     public override string Description
         => "Send a GIF in chat ('/gif apiKey' will reroute you to the site to get your own)";
 
-    public override async void Action(CommandCaller caller, string input, string[] args)
+    public override void Action(CommandCaller caller, string input, string[] args)
     {
         if (args == null)
             return;
@@ -42,19 +43,17 @@ public class GifCommand : ModCommand
             string query = string.Join(' ', args);
 
             ICommunicator communicator = new TenorCommunicator();
-            var response = await communicator.GetResponse(query);
+            communicator.HandleQuery(query);
 
-            if (response == null)
-                return;
+            if (Main.netMode is NetmodeID.MultiplayerClient)
+            {
+                var packet = Mod.GetPacket();
 
-            var results = await ModUtils.DeserializeResults<TenorResults>(response);
-            var result = results.GetRandomResult();
-            var gifUrl = result.GetFormat(FormatType.TinyGif).Url;
+                packet.Write((byte)2);
+                packet.Write(query);
 
-            var gifStream = await ModUtils.GetStreamFromUrl(gifUrl);
-            var gifFramesStreams = await ModUtils.ExtractGifFrames(gifStream);
-
-            GifsChatSystem.EnqueueGifFramesStreams(gifFramesStreams);
+                packet.Send();
+            }
 
             _timeSinceLastCommand.Restart();
         }

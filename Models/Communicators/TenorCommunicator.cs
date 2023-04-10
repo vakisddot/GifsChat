@@ -1,4 +1,6 @@
-﻿using GifsChat.Models.Json;
+﻿using GifsChat.Core;
+using GifsChat.Models.Json;
+using GifsChat.Utils;
 using GifsChat.Utils.Exceptions;
 using System;
 using System.Net.Http;
@@ -12,10 +14,26 @@ public class TenorCommunicator : ICommunicator
     // Search parameters
     private const string ClientKey = "gifs_chat_terraria";
     private const string MediaFilter = "tinygif,tinygifpreview";
-    public Type ResultType => typeof(TenorResults);
     // Url
     private const string TenorApiUrl = 
         @"https://tenor.googleapis.com/v2/search?q={0}&key={1}&client_key={2}&limit={3}&media_filter={4}&contentfilter={5}";
+
+    public async void HandleQuery(string query)
+    {
+        var response = await GetResponse(query);
+
+        if (response == null)
+            return;
+
+        var results = await ModUtils.DeserializeResults<TenorResults>(response);
+        var result = results.GetRandomResult();
+        var gifUrl = result.GetFormat(FormatType.TinyGif).Url;
+
+        var gifStream = await ModUtils.GetStreamFromUrl(gifUrl);
+        var gifFramesStreams = await ModUtils.ExtractGifFrames(gifStream);
+
+        GifsChatSystem.EnqueueGifFramesStreams(gifFramesStreams);
+    }
 
     public async Task<HttpResponseMessage> GetResponse(string query)
     {

@@ -1,5 +1,6 @@
 ﻿using GifsChat.Configs;
 using GifsChat.Core;
+using GifsChat.Models.Communicators;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ public class GifsChatMod : Mod
     internal static GifsChatMod Instance;
     internal static List<Color> CacheColors = new();
 
-    internal static Dictionary<string, List<Texture2D>> CacheTextures = new();
+    internal static Dictionary<int, List<Texture2D>> CacheTextures = new();
 
     public override void Load()
     {
@@ -98,9 +99,9 @@ public class GifsChatMod : Mod
                     p.Write(reader.ReadUInt16()); // width
                     p.Write(reader.ReadUInt16()); // height
 
-                    if (CacheTextures.ContainsKey(whoAmI + name) && texIndex == 0)
+                    if (CacheTextures.ContainsKey(whoAmI) && texIndex == 0)
                     {
-                        CacheTextures[whoAmI + name].Clear();
+                        CacheTextures[whoAmI].Clear();
                     }
 
                     p.Send(ignoreClient: whoAmI);
@@ -113,9 +114,9 @@ public class GifsChatMod : Mod
                     ushort width = reader.ReadUInt16();
                     ushort height = reader.ReadUInt16();
 
-                    if (!CacheTextures.ContainsKey(whoAmI + name))
+                    if (!CacheTextures.ContainsKey(whoAmI))
                     {
-                        CacheTextures.Add(whoAmI + name, new());
+                        CacheTextures.Add(whoAmI, new());
                     }
 
                     if (ClientConfig.SkipEverySecondFrame && texIndex % 2 == 1)
@@ -123,8 +124,8 @@ public class GifsChatMod : Mod
                         if (texIndex == texturesLength - 1)
                         {
                             Main.NewText(name);
-                            RemadeChatMonitorHooks.SendTexture(CacheTextures[whoAmI + name].ToArray(), false);
-                            CacheTextures[whoAmI + name].Clear();
+                            RemadeChatMonitorHooks.SendTexture(CacheTextures[whoAmI].ToArray());
+                            CacheTextures[whoAmI].Clear();
                         }
 
                         return;
@@ -133,18 +134,36 @@ public class GifsChatMod : Mod
                     var tex = new Texture2D(Main.graphics.GraphicsDevice, width, height);
                     tex.SetData(0, new Rectangle(0, 0, width, height), CacheColors.ToArray(), 0, width * height);
 
-                    CacheTextures[whoAmI + name].Add(tex);
+                    CacheTextures[whoAmI].Add(tex);
 
                     if (texIndex == texturesLength - 1)
                     {
                         Main.NewText(name);
-                        RemadeChatMonitorHooks.SendTexture(CacheTextures[whoAmI + name].ToArray(), !ClientConfig.SkipEverySecondFrame);
-                        CacheTextures[whoAmI + name].Clear();
+                        RemadeChatMonitorHooks.SendTexture(CacheTextures[whoAmI].ToArray());
+                        CacheTextures[whoAmI].Clear();
                     }
 
                     CacheColors.Clear();
                 }
 
+                break;
+            case 2:
+                if (Main.netMode is NetmodeID.Server)
+                {
+                    var p = GetPacket();
+
+                    p.Write((byte)2);
+                    p.Write(reader.ReadString());
+
+                    p.Send(ignoreClient: whoAmI);
+                }
+                else
+                {
+                    string query = reader.ReadString();
+
+                    ICommunicator communicator = new TenorCommunicator();
+                    communicator.HandleQuery(query);
+                }
                 break;
         }
     }
@@ -202,25 +221,6 @@ public class GifsChatMod : Mod
     {
         Main.NewText($"<{Main.LocalPlayer.name}>");
 
-        if (ClientConfig.SkipEverySecondFrame)
-        {
-            List<Texture2D> filteredTextures = new();
-
-            for (int i = 0; i < textures.Length; i += 2)
-            {
-                filteredTextures.Add(textures[i]);
-            }
-
-            RemadeChatMonitorHooks.SendTexture(filteredTextures.ToArray(), false);
-        }
-        else
-        {
-            RemadeChatMonitorHooks.SendTexture(textures);
-        }
-
-        if (Main.netMode is NetmodeID.MultiplayerClient)
-        {
-            Instance.SendImagePacket(textures);
-        }
+        RemadeChatMonitorHooks.SendTexture(textures);
     }
 }
