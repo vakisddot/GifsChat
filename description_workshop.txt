@@ -1,0 +1,18 @@
+Have you ever thought [i]"You know what Terraria is missing? Gifs."[/i] (Tbh most likely not, but anyways, now you have gifs in Terraria!!)
+Gifs are a fun way to spice up your chat in Terraria. You can use them to react to events, make jokes, pollute the chat with garbage or just be cringy in general.
+
+[h1]Warning![/h1]
+- As of right now, this mod is still in [b]early stages of development[/b] and it is not perfect. Sending and receiving GIFs can be slow, glitchy, cause memory leaks or even [b]crashes[/b]. So if you're not a fan of those, you might want to hold off on using this mod until it's more stable.
+- I also [b]strongly recommend against[b/] using this mod in servers with 5 or more players!
+- The mod should theoretically be 100% compatible with most other mods that don't directly manipulate the chat, but I haven't really tested it extensively yet.
+- I am also not 100% sure if the mod works correctly on Mac and Linux, let me know if you use those and face any issues!
+
+Credits:
+- [url=https://steamcommunity.com/id/cyrilliy]Cyrillya[/url] - Creator of the [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2899871898]Image Chat mod[/url]. A lot of the mod's code is based on his mod (which ironically, is not compatible with GIFs Chat as of right now)
+- [url=https://tenor.com/]Tenor[/url] - GIF search engine
+- ImageSharp
+
+[h1]Changelog[/h1]
+
+[h1]Code[/h1]
+This mod is [url=https://github.com/vakisddot/GifsChat]open-source[/url] under the GPL-3.0 license
