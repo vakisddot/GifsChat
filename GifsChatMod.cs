@@ -30,11 +30,6 @@ namespace GifsChat;
 
 public class GifsChatMod : Mod
 {
-    internal static string FolderPath
-        => Main.SavePath + Path.DirectorySeparatorChar
-        + "Captures" + Path.DirectorySeparatorChar
-        + "CachedImages" + Path.DirectorySeparatorChar;
-
     internal static ServerConfig ServerConfig;
     internal static ClientConfig ClientConfig;
     public override void HandlePacket(BinaryReader reader, int whoAmI)

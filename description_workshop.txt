@@ -15,6 +15,8 @@ Credits:
 - ImageSharp
 
 [h1]Changelog[/h1]
+v0.1.1
+- Game no longer crashes on bad response from Tenor
 
 [h1]Code[/h1]
 This mod is [url=https://github.com/vakisddot/GifsChat]open-source[/url] under the GPL-3.0 license

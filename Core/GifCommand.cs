@@ -55,6 +55,12 @@ public class GifCommand : ModCommand
             ICommunicator communicator = new TenorCommunicator();
 
             string gifUrl = await communicator.QueryGifUrl(query);
+
+            if (gifUrl == null)
+            {
+                return;
+            }
+
             communicator.ExtractAndSendGif(gifUrl, Main.LocalPlayer.name);
 
             if (Main.netMode is NetmodeID.MultiplayerClient)
