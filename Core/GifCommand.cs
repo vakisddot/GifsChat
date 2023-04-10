@@ -6,7 +6,6 @@ using GifsChat.Utils.Exceptions;
 using GifsChat.Models.Communicators;
 using Terraria.ID;
 using Terraria;
-using System;
 using System.Linq;
 
 namespace GifsChat.Core;
@@ -20,7 +19,7 @@ public class GifCommand : ModCommand
     public override string Description
         => "Send a GIF in chat ('/gif apiKey' will send you to a site where you can get your own key)";
 
-    public override void Action(CommandCaller caller, string input, string[] args)
+    public async override void Action(CommandCaller caller, string input, string[] args)
     {
         if (!GifsChatMod.ClientConfig.GifsEnabled || !GifsChatMod.ServerConfig.GifsEnabled)
         {
@@ -54,14 +53,17 @@ public class GifCommand : ModCommand
             string query = string.Join(' ', args);
 
             ICommunicator communicator = new TenorCommunicator();
-            communicator.HandleQuery(query);
+
+            string gifUrl = await communicator.QueryGifUrl(query);
+            communicator.ExtractAndSendGif(gifUrl, Main.LocalPlayer.name);
 
             if (Main.netMode is NetmodeID.MultiplayerClient)
             {
                 var packet = Mod.GetPacket();
 
                 packet.Write((byte)2);
-                packet.Write(query);
+                packet.Write(gifUrl);
+                packet.Write(Main.LocalPlayer.name);
 
                 packet.Send();
             }

@@ -8,6 +8,6 @@ Warning!
 - I am also not 100% sure if the mod works correctly on Mac and Linux, let me know if you use those and face any issues!
 
 Credits:
-- Cyrillya - Creator of the Image Chat mod. A lot of the mod's code is based on his Image Chat mod (which ironically, is not compatible with GIFs Chat as of right now)
+- Cyrillya - Creator of the Image Chat mod. A lot of the mod's code is based on his mod (which ironically, is not compatible with GIFs Chat as of right now)
 - Tenor - GIF search engine
 - ImageSharp

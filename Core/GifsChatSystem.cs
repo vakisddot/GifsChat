@@ -4,20 +4,22 @@ using Terraria.ModLoader;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using System;
 
 namespace GifsChat.Core;
 
 public class GifsChatSystem : ModSystem
 {
-    public static Queue<Stream> AwaitingStreams = new();
-    private static Queue<Texture2D> _awaitingTextures = new();
+    private static Dictionary<uint, Queue<Stream>> s_awaitingStreams = new();
+    private static Dictionary<uint, List<Texture2D>> s_awaitingGifs = new();
+    private static Dictionary<uint, string> s_gifSenders = new();
 
     private const int StreamConvertDelay = 0;
     private int _frameCounter;
 
     public override void PostUpdateEverything()
     {
-        TrySendImage();
+        TrySendGif();
 
         if (_frameCounter >= StreamConvertDelay)
         {
@@ -29,32 +31,57 @@ public class GifsChatSystem : ModSystem
     }
     private void TryConvertFirstStream()
     {
-        if (!AwaitingStreams.Any())
-            return;
-
-        var stream = AwaitingStreams.Dequeue();
-
-        _awaitingTextures.Enqueue(Texture2D.FromStream(Main.instance.GraphicsDevice, stream));
-        stream.Dispose();
-    }
-    private void TrySendImage()
-    {
-        if (!_awaitingTextures.Any() || AwaitingStreams.Any())
-            return;
-
-        try
+        foreach (var awaitingStream in s_awaitingStreams)
         {
-            GifsChatMod.LocalSendImage(_awaitingTextures.ToArray());
-        }
-        catch { }
+            uint hash = awaitingStream.Key;
+            var queue = awaitingStream.Value;
 
-        _awaitingTextures.Clear();
+            var stream = queue.Dequeue();
+
+            s_awaitingGifs[hash].Add(Texture2D.FromStream(Main.instance.GraphicsDevice, stream));
+
+            stream.Dispose();
+        }
     }
-    public static void EnqueueGifFramesStreams(Stream[] streams)
+    private void TrySendGif()
     {
+        foreach (var awaitingGif in s_awaitingGifs.Where(g => g.Value.Any()))
+        {
+            uint hash = awaitingGif.Key;
+            var queue = awaitingGif.Value;
+
+            if (s_awaitingStreams[hash].Any())
+                continue;
+
+            try
+            {
+                //Main.NewText($"<{s_gifSenders[hash]}_{hash}>");
+                Main.NewText($"<{s_gifSenders[hash]}>");
+                GifsChatMod.LocalSendImage(queue.ToArray());
+            }
+            catch { }
+            finally
+            {
+                // Once a gif has been successfully sent, we delete it from our caches
+                s_awaitingStreams.Remove(hash);
+                s_awaitingGifs.Remove(hash);
+                s_gifSenders.Remove(hash);
+
+                //Main.NewText(s_awaitingGifs.Count);
+            }
+        }
+    }
+    public static void EnqueueGifFramesStreams(Stream[] streams, string sentBy)
+    {
+        uint hashCode = (uint)(DateTime.Now.GetHashCode() ^ sentBy.GetHashCode());
+
+        s_awaitingStreams.Add(hashCode, new());
+        s_awaitingGifs.Add(hashCode, new());
+        s_gifSenders.Add(hashCode, sentBy);
+
         foreach (var stream in streams)
         {
-            AwaitingStreams.Enqueue(stream);
+            s_awaitingStreams[hashCode].Enqueue(stream);
         }
     }
 }
