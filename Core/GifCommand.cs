@@ -6,6 +6,8 @@ using GifsChat.Utils.Exceptions;
 using GifsChat.Models.Communicators;
 using Terraria.ID;
 using Terraria;
+using System;
+using System.Linq;
 
 namespace GifsChat.Core;
 public class GifCommand : ModCommand
@@ -16,12 +18,21 @@ public class GifCommand : ModCommand
     public override CommandType Type
         => CommandType.Chat;
     public override string Description
-        => "Send a GIF in chat ('/gif apiKey' will reroute you to the site to get your own)";
+        => "Send a GIF in chat ('/gif apiKey' will send you to a site where you can get your own key)";
 
     public override void Action(CommandCaller caller, string input, string[] args)
     {
-        if (args == null)
+        if (!GifsChatMod.ClientConfig.GifsEnabled || !GifsChatMod.ServerConfig.GifsEnabled)
+        {
+            Main.NewText("[GIFsChat] GIFs are disabled!", Color.Orange);
             return;
+        }
+
+        if (args == null || !SanitizeInput(string.Join(' ', args)))
+        {
+            Main.NewText("[GIFsChat] Invalid input!", Color.Orange);
+            return;
+        }
 
         if (args[0] == "apiKey")
         {
@@ -63,4 +74,14 @@ public class GifCommand : ModCommand
         }
         catch { }
     }
+
+    private bool SanitizeInput(string args)
+        => !(string.IsNullOrWhiteSpace(args)
+        || !args.Any(char.IsLetter)
+        || args.Any(c => c == '\'')
+        || args.Any(c => c == '#')
+        || args.Any(c => c == '"')
+        || args.Any(c => c == '\\')
+        || args.Any(c => c == '/')
+        );
 }

@@ -47,11 +47,12 @@ public static class ModUtils
 
         using (var gif = await Image.LoadAsync<Rgba32>(gifStream))
         {
-            var frameCount = gif.Frames.Count;
+            var totalFrameCount = gif.Frames.Count;
 
             Image<Rgba32> previousFrame = null;
 
-            for (int i = 0; i < frameCount; i++)
+            // Will break once every frame has been extracted or the frames limit has been reached
+            for (int i = 0; i < totalFrameCount && frames.Count < GifsChatMod.ClientConfig.FramesLimit; i++)
             {
                 var frame = gif.Frames.CloneFrame(i);
                 var image = new Image<Rgba32>(frame.Width, frame.Height);

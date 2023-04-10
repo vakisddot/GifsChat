@@ -1,6 +1,8 @@
 ﻿using GifsChat.Configs;
 using GifsChat.Core;
 using GifsChat.Models.Communicators;
+using GifsChat.Utils.Exceptions;
+using Ionic.Zlib;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -148,23 +150,32 @@ public class GifsChatMod : Mod
 
                 break;
             case 2:
-                if (Main.netMode is NetmodeID.Server)
+                try
                 {
-                    var p = GetPacket();
+                    if (Main.netMode is NetmodeID.Server)
+                    {
+                        var p = GetPacket();
 
-                    p.Write((byte)2);
-                    p.Write(reader.ReadString());
+                        p.Write((byte)2);
+                        p.Write(reader.ReadString());
 
-                    p.Send(ignoreClient: whoAmI);
+                        p.Send(ignoreClient: whoAmI);
+                    }
+                    else
+                    {
+                        string query = reader.ReadString();
+
+                        ICommunicator communicator = new TenorCommunicator();
+                        communicator.HandleQuery(query);
+                    }
                 }
-                else
+                catch (GifsChatException e)
                 {
-                    string query = reader.ReadString();
-
-                    ICommunicator communicator = new TenorCommunicator();
-                    communicator.HandleQuery(query);
+                    Main.NewText(e.Message, Color.Orange);
                 }
+                catch { }
                 break;
+
         }
     }
 

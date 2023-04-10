@@ -2,10 +2,12 @@
 using GifsChat.Models.Json;
 using GifsChat.Utils;
 using GifsChat.Utils.Exceptions;
+using Microsoft.Xna.Framework;
 using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Terraria;
 
 namespace GifsChat.Models.Communicators;
 
@@ -20,6 +22,9 @@ public class TenorCommunicator : ICommunicator
 
     public async void HandleQuery(string query)
     {
+        if (!GifsChatMod.ClientConfig.GifsEnabled || !GifsChatMod.ServerConfig.GifsEnabled)
+            return;
+
         var response = await GetResponse(query);
 
         if (response == null)
@@ -38,7 +43,10 @@ public class TenorCommunicator : ICommunicator
     public async Task<HttpResponseMessage> GetResponse(string query)
     {
         if (string.IsNullOrWhiteSpace(query))
-            throw new GifsChatException("Your request was empty!");
+        {
+            Main.NewText("[GIFsChat] Empty request!", Color.Orange);
+            return null;
+        }    
 
         HttpResponseMessage response;
 
@@ -57,7 +65,7 @@ public class TenorCommunicator : ICommunicator
             {
                 StringBuilder sb = new();
 
-                sb.AppendLine($"Failed to get OK response from Tenor!");
+                sb.AppendLine($"[GIFsChat] Failed to get OK response from Tenor!");
 
                 if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
                 {
@@ -69,7 +77,8 @@ public class TenorCommunicator : ICommunicator
                     sb.AppendLine($" Status code {(int)response.StatusCode} ({response.StatusCode}).");
                 }
 
-                throw new GifsChatException(sb.ToString());
+                Main.NewText(sb.ToString().TrimEnd(), Color.Orange);
+                return null;
             }
         }
 
