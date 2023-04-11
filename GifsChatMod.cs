@@ -1,18 +1,11 @@
 ﻿using GifsChat.Configs;
-using GifsChat.Core;
 using GifsChat.Models.Communicators;
 using GifsChat.Utils.Exceptions;
-using Ionic.Zlib;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-
-using Color = Microsoft.Xna.Framework.Color;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace GifsChat;
 
@@ -66,9 +59,5 @@ public class GifsChatMod : Mod
                 break;
 
         }
-    }
-    public static void LocalSendImage(params Texture2D[] textures)
-    {
-        RemadeChatMonitorHooks.SendTexture(textures);
     }
 }

@@ -2,7 +2,6 @@
 using GifsChat.Models.Json;
 using GifsChat.Utils;
 using Microsoft.Xna.Framework;
-using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +14,7 @@ public class TenorCommunicator : ICommunicator
     // Search parameters
     private const string ClientKey = "gifs_chat_terraria";
     private const string MediaFilter = "tinygif,tinygifpreview";
+
     // Url
     private const string TenorApiUrl =
         @"https://tenor.googleapis.com/v2/search?q={0}&key={1}&client_key={2}&limit={3}&media_filter={4}&contentfilter={5}";
@@ -40,7 +40,7 @@ public class TenorCommunicator : ICommunicator
         var gifStream = await ModUtils.GetStreamFromUrl(gifUrl);
         var gifFramesStreams = await ModUtils.ExtractGifFrames(gifStream);
 
-        GifsChatSystem.EnqueueGifFramesStreams(gifFramesStreams, sentBy);
+        GifsChatSystem.EnqueueGifFramesStreams(gifFramesStreams, sentBy, gifUrl);
     }
 
     public async Task<HttpResponseMessage> GetResponse(string query)

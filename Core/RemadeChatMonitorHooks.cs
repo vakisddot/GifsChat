@@ -19,7 +19,7 @@ public class RemadeChatMonitorHooks : ModSystem
     private static Dictionary<string, FieldInfo> _fields;
     private static Dictionary<string, FieldInfo> _msgContainerFields;
 
-    internal static void SendTexture(Texture2D[] textures)
+    internal static void SendTexture(Texture2D[] textures, string fromUrl = null)
     {
         var msgContainer = new ChatMessageContainer();
         msgContainer.SetContents(" ", Color.White, -1);
@@ -33,7 +33,7 @@ public class RemadeChatMonitorHooks : ModSystem
             new TextSnippet[]
             {
                 textures.Length > 1
-                ? new GifSnippet(textures)
+                ? new GifSnippet(textures, fromUrl)
                 : new ImageSnippet(textures[0])
             }
         };

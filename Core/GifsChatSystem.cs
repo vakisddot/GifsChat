@@ -12,7 +12,7 @@ public class GifsChatSystem : ModSystem
 {
     private static Dictionary<uint, Queue<Stream>> s_awaitingStreams = new();
     private static Dictionary<uint, List<Texture2D>> s_awaitingGifs = new();
-    private static Dictionary<uint, string> s_gifSenders = new();
+    private static Dictionary<uint, (string sentBy, string url)> s_gifDatas = new();
 
     private const int StreamConvertDelay = 0;
     private int _frameCounter;
@@ -56,8 +56,8 @@ public class GifsChatSystem : ModSystem
             try
             {
                 //Main.NewText($"<{s_gifSenders[hash]}_{hash}>");
-                Main.NewText($"<{s_gifSenders[hash]}>");
-                GifsChatMod.LocalSendImage(queue.ToArray());
+                Main.NewText($"<{s_gifDatas[hash].sentBy}>");
+                RemadeChatMonitorHooks.SendTexture(queue.ToArray(), s_gifDatas[hash].url);
             }
             catch { }
             finally
@@ -65,19 +65,19 @@ public class GifsChatSystem : ModSystem
                 // Once a gif has been successfully sent, we delete it from our caches
                 s_awaitingStreams.Remove(hash);
                 s_awaitingGifs.Remove(hash);
-                s_gifSenders.Remove(hash);
+                s_gifDatas.Remove(hash);
 
                 //Main.NewText(s_awaitingGifs.Count);
             }
         }
     }
-    public static void EnqueueGifFramesStreams(Stream[] streams, string sentBy)
+    public static void EnqueueGifFramesStreams(Stream[] streams, string sentBy, string url)
     {
         uint hashCode = (uint)(DateTime.Now.GetHashCode() ^ sentBy.GetHashCode());
 
         s_awaitingStreams.Add(hashCode, new());
         s_awaitingGifs.Add(hashCode, new());
-        s_gifSenders.Add(hashCode, sentBy);
+        s_gifDatas.Add(hashCode, (sentBy, url));
 
         foreach (var stream in streams)
         {

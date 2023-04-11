@@ -15,6 +15,10 @@ Credits:
 - ImageSharp
 
 [h1]Changelog[/h1]
+v0.1.2
+- Fixed slight performance issues
+- Gifs can now be clicked on and opened in the browser
+- Frame limit cap increased
 v0.1.1
 - Game no longer crashes on bad response from Tenor
 

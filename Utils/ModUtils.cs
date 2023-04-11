@@ -1,7 +1,4 @@
-﻿using GifsChat.Configs;
-using GifsChat.Core;
-using GifsChat.Utils.Exceptions;
-using Microsoft.Xna.Framework.Graphics;
+﻿using GifsChat.Utils.Exceptions;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -63,12 +60,12 @@ public static class ModUtils
                 image.Mutate(c => c.DrawImage(frame, 1));
                 previousFrame = image.Clone();
 
-                var frameStream = new MemoryStream();
-                await image.SaveAsGifAsync(frameStream);
-
                 // We skip adding every second frame if frameskip is on
                 if (GifsChatMod.ClientConfig.SkipEverySecondFrame && i % 2 == 1)
                     continue;
+
+                var frameStream = new MemoryStream();
+                await image.SaveAsGifAsync(frameStream);
                 
                 frames.Add(frameStream);
             }
@@ -78,5 +75,8 @@ public static class ModUtils
     }
 
     public static void RerouteToApiSite()
-        => Process.Start(new ProcessStartInfo("https://developers.google.com/tenor/guides/quickstart") { UseShellExecute = true });
+        => RerouteToSite("https://developers.google.com/tenor/guides/quickstart");
+
+    public static void RerouteToSite(string url)
+        => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 }

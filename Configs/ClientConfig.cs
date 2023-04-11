@@ -48,9 +48,9 @@ public class ClientConfig : ModConfig
     [Tooltip("Turning this on is recommended for lower-end machines")]
     public bool SkipEverySecondFrame;
 
-    [Label("Frame Limit (5-50)")]
+    [Label("Frame Limit (5-150)")]
     [Tooltip("Determines the max amount of frames that will be extracted from a gif. Lower values recommended for lower-end machines")]
     [DefaultValue(30)]
-    [Range(5, 50)]
+    [Range(5, 150)]
     public int FramesLimit;
 }

@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GifsChat.Utils;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
+using System;
 using System.Diagnostics;
 using Terraria;
 using Terraria.UI.Chat;
@@ -11,17 +13,21 @@ public class GifSnippet : TextSnippet, IImageSnippet
 {
     private const short GifDelay = 20;
 
+    private Texture2D[] _frames;
+    private string _url;
+
     private short _framesUntilFrameUpdate;
     private Stopwatch _deathWatch;
     private short _frameCounter;
     private byte _currentFrameIndex;
 
-    private Texture2D[] _frames;
-
-    public GifSnippet(Texture2D[] frames)
+    public GifSnippet(Texture2D[] frames, string url)
     {
-        _deathWatch = Stopwatch.StartNew();
         _frames = frames;
+        _url = GetHdUrl(url);
+
+        _deathWatch = Stopwatch.StartNew();
+
         Scale = 1f;
 
         _framesUntilFrameUpdate = (short)(GifDelay * (GifsChatMod.ClientConfig.SkipEverySecondFrame ? 2 : 1));
@@ -42,12 +48,38 @@ public class GifSnippet : TextSnippet, IImageSnippet
             }
         }
     }
+
+    public override void OnHover()
+    {
+        if (!Main.drawingPlayerChat) 
+            return;
+
+        Main.instance.MouseText($"Click to open in browser");
+    }
+
+    public override void OnClick()
+    {
+        if (!Main.drawingPlayerChat) 
+            return;
+
+        if (string.IsNullOrWhiteSpace(_url))
+            return;
+
+        try
+        {
+            ModUtils.RerouteToSite(_url);
+        }
+        catch { }
+    }
+
     public override void Update()
     {
         if (_deathWatch == null || _deathWatch.ElapsedMilliseconds >= GifsChatMod.ServerConfig.GifLifetime * 1000)
         {
             _frames = null;
             _deathWatch = null;
+            _url = null;
+
             return;
         }
 
@@ -60,6 +92,7 @@ public class GifSnippet : TextSnippet, IImageSnippet
 
         _frameCounter++;
     }
+
     private void NextFrame()
     {
         if (_currentFrameIndex + 1 == _frames.Length)
@@ -94,4 +127,10 @@ public class GifSnippet : TextSnippet, IImageSnippet
 
     public int GetChatYOffset()
         => _frames != null ? (int)(_frames[0].Height * Scale) : 0;
+
+    private static string GetHdUrl(string sdUrl)
+    {
+        int index = sdUrl.LastIndexOf('/') - 1;
+        return sdUrl.Substring(0, index) + 'C' + sdUrl.Substring(index + 1);
+    }
 }
