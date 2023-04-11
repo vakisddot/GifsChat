@@ -1,4 +1,4 @@
-![icon](iconSteam.png)
+![icon](icon.png)
 
 # GifsChat
  Mod for Terraria
