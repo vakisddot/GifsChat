@@ -47,6 +47,9 @@ public class GifsChatMod : Mod
                         string gifUrl = reader.ReadString();
                         string sentBy = reader.ReadString();
 
+                        if (!ClientConfig.GifsEnabled || !ServerConfig.GifsEnabled)
+                            return;
+
                         ICommunicator communicator = new TenorCommunicator();
                         communicator.ExtractAndSendGif(gifUrl, sentBy);
                     }

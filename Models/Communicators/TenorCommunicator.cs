@@ -40,7 +40,7 @@ public class TenorCommunicator : ICommunicator
         var gifStream = await ModUtils.GetStreamFromUrl(gifUrl);
         var gifFramesStreams = await ModUtils.ExtractGifFrames(gifStream);
 
-        GifsChatSystem.EnqueueGifFramesStreams(gifFramesStreams, sentBy, gifUrl);
+        GifConverter.EnqueueGifFramesStreams(gifFramesStreams, sentBy, gifUrl);
     }
 
     public async Task<HttpResponseMessage> GetResponse(string query)

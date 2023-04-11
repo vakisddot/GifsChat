@@ -8,7 +8,7 @@ using System;
 
 namespace GifsChat.Core;
 
-public class GifsChatSystem : ModSystem
+public class GifConverter : ModSystem
 {
     private static Dictionary<uint, Queue<Stream>> s_awaitingStreams = new();
     private static Dictionary<uint, List<Texture2D>> s_awaitingGifs = new();
