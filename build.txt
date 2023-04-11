@@ -1,4 +1,4 @@
-displayName = GifsChat
+displayName = GIFs in Chat
 author = Vakïs
-version = 0.1.2
+version = 0.1.3
 dllReferences = SixLabors.ImageSharp

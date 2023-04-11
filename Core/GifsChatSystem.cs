@@ -31,17 +31,23 @@ public class GifsChatSystem : ModSystem
     }
     private void TryConvertFirstStream()
     {
-        foreach (var awaitingStream in s_awaitingStreams)
-        {
-            uint hash = awaitingStream.Key;
-            var queue = awaitingStream.Value;
+        if (!s_awaitingStreams.Any())
+            return;
 
-            var stream = queue.Dequeue();
+        var awaitingStream = s_awaitingStreams.First();
 
-            s_awaitingGifs[hash].Add(Texture2D.FromStream(Main.instance.GraphicsDevice, stream));
+        // This check might be unnecessary
+        if (awaitingStream.Value == null || !awaitingStream.Value.Any())
+            return;
 
-            stream.Dispose();
-        }
+        uint hash = awaitingStream.Key;
+        var queue = awaitingStream.Value;
+
+        var stream = queue.Dequeue();
+
+        s_awaitingGifs[hash].Add(Texture2D.FromStream(Main.instance.GraphicsDevice, stream));
+
+        stream.Dispose();
     }
     private void TrySendGif()
     {

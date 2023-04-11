@@ -56,8 +56,9 @@ public class GifCommand : ModCommand
 
             string gifUrl = await communicator.QueryGifUrl(query);
 
-            if (gifUrl == null)
+            if (string.IsNullOrWhiteSpace(gifUrl))
             {
+                Main.NewText("[GIFsChat] Failed to get valid URL from Tenor!", Color.Orange);
                 return;
             }
 
