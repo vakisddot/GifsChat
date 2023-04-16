@@ -84,6 +84,8 @@ public static class ModUtils
                 
                 frames.Add(frameStream);
             }
+
+            previousFrame.Dispose();
         }
         
         return frames.ToArray();

@@ -48,7 +48,7 @@ public class ClientConfig : ModConfig
     [Header("Performance")]
     [Label("Skip Every 2nd Frame")]
     [Tooltip(
-        "This will skip every second frame of a Gif, resulting in less memory usage, but worse animation\r\n" +
+        "This will skip every second frame of a Gif, resulting in better performance, but worse animation\r\n" +
         "Recommended for lower-end machines")]
     public bool SkipEverySecondFrame;
 

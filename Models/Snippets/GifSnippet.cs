@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using Terraria;
 using Terraria.UI.Chat;
+using Terraria.Graphics.Shaders;
 
 namespace GifsChat.Models.Snippets;
 
@@ -115,7 +116,10 @@ public class GifSnippet : TextSnippet, IImageSnippet
 
         if (!justCheckingString && color != Color.Black)
         {
-            spriteBatch.Draw(_frames[_currentFrameIndex], position, null, Color.White * GifsChatMod.ClientConfig.Opacity, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(
+                _frames[_currentFrameIndex], position, null, 
+                Color.White * GifsChatMod.ClientConfig.Opacity, 0f, Vector2.Zero, 
+                scale, SpriteEffects.None, 0f);
         }
 
         size = _frames[0].Size() * scale; // 这里拿来作间隔的，GetStringLength不知道拿来干啥的反正绘制没用
