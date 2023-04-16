@@ -55,24 +55,17 @@ public class GifCommand : ModCommand
             ICommunicator communicator = new TenorCommunicator();
 
             string gifUrl = await communicator.QueryGifUrl(query);
-
             if (string.IsNullOrWhiteSpace(gifUrl))
             {
                 Main.NewText("[GIFsChat] Failed to get valid URL from Tenor!", Color.Orange);
                 return;
             }
 
+            // Sends the GIF to all players
             communicator.ExtractAndSendGif(gifUrl, Main.LocalPlayer.name);
-
             if (Main.netMode is NetmodeID.MultiplayerClient)
             {
-                var packet = Mod.GetPacket();
-
-                packet.Write((byte)2);
-                packet.Write(gifUrl);
-                packet.Write(Main.LocalPlayer.name);
-
-                packet.Send();
+                NetHandler.SendGifURLPacket(gifUrl, Main.LocalPlayer.name);
             }
 
             _timeSinceLastCommand.Restart();
@@ -91,6 +84,5 @@ public class GifCommand : ModCommand
         || args.Any(c => c == '#')
         || args.Any(c => c == '"')
         || args.Any(c => c == '\\')
-        || args.Any(c => c == '/')
         );
 }
