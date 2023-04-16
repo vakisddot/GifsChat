@@ -6,7 +6,6 @@ using Terraria.ID;
 using Terraria;
 using System.Linq;
 using System;
-using System.Text.RegularExpressions;
 
 namespace GifsChat.Core;
 public class GifCommand : ModCommand
@@ -16,14 +15,13 @@ public class GifCommand : ModCommand
         => "gif";
     public override CommandType Type
         => CommandType.Chat;
-    public override string Description => 
-        $"Sends a Gif in chat {Environment.NewLine}";
+    public override string Description 
+        => $"Sends a Gif in chat {Environment.NewLine}";
     public override string Usage =>
         $"{Environment.NewLine}" +
         $" - \"/gif john xina\" will send a random gif of John Xina {Environment.NewLine}" +
         $" - \"/gif https://.../john-xina.gif\" will send a specific gif of John Xina {Environment.NewLine}" +
         $" - \"/gif api\" will send you to a site where you can get your own API key {Environment.NewLine}" +
-        $"(Note that when sending gifs by URL the URL must start with 'https://' and end with '.gif')" +
         $"{Environment.NewLine}";
 
     public async override void Action(CommandCaller caller, string input, string[] args)
@@ -59,12 +57,19 @@ public class GifCommand : ModCommand
         {
             string gifUrl = string.Empty;
 
-            if (Regex.IsMatch(args[0], @"^https://.*\.gif$"))
+            if (args[0].IsUrl())
             {
-                if (GifsChatMod.ServerConfig.AllowGifsByUrl)
-                    gifUrl = args[0];
+                if (args[0].IsValidGifUrl())
+                {
+                    if (GifsChatMod.ServerConfig.AllowGifsByUrl)
+                        gifUrl = args[0];
+                    else
+                        ModUtils.NewText("Server does not allow Gifs to be sent by URL!");
+                }
                 else
-                    ModUtils.NewText("Server does not allow Gifs to be sent by URL!");
+                {
+                    ModUtils.NewText("Invalid Gif URL! Note: URL must end with \".gif\" or \".webp\"");
+                }
             }
             else
             {

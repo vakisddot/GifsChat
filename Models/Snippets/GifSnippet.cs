@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
-using System;
+using System.Text.RegularExpressions;
 using System.Diagnostics;
 using Terraria;
 using Terraria.UI.Chat;
@@ -24,7 +24,7 @@ public class GifSnippet : TextSnippet, IImageSnippet
     public GifSnippet(Texture2D[] frames, string url)
     {
         _frames = frames;
-        _url = GetHdUrl(url);
+        _url = TryGetHdUrl(url);
 
         _deathWatch = Stopwatch.StartNew();
 
@@ -128,8 +128,17 @@ public class GifSnippet : TextSnippet, IImageSnippet
     public int GetChatYOffset()
         => _frames != null ? (int)(_frames[0].Height * Scale) : 0;
 
-    private static string GetHdUrl(string sdUrl)
+    /// <returns>
+    /// The URL of the HD version of the Gif if this was sent through Tenor. 
+    /// <para>If not, it just returns the normal URL</para>
+    /// </returns>
+    private static string TryGetHdUrl(string sdUrl)
     {
+        if (!sdUrl.StartsWith("https://media.tenor.com"))
+        {
+            return sdUrl;
+        }
+
         int index = sdUrl.LastIndexOf('/') - 1;
         return sdUrl.Substring(0, index) + 'C' + sdUrl.Substring(index + 1);
     }

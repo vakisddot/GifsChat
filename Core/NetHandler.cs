@@ -24,6 +24,7 @@ public static class NetHandler
             case (byte)PacketType.GifURL:
                 try
                 {
+                    // Server
                     if (Main.netMode is NetmodeID.Server)
                     {
                         var p = GifsChatMod.Instance.GetPacket();
@@ -34,12 +35,15 @@ public static class NetHandler
 
                         p.Send(ignoreClient: whoAmI);
                     }
+                    // Client
                     else
                     {
                         string gifUrl = reader.ReadString();
                         string sentBy = reader.ReadString();
 
-                        if (!GifsChatMod.ClientConfig.GifsEnabled || !GifsChatMod.ServerConfig.GifsEnabled)
+                        if (string.IsNullOrWhiteSpace(gifUrl)
+                            || !GifsChatMod.ClientConfig.GifsEnabled 
+                            || !GifsChatMod.ServerConfig.GifsEnabled)
                             return;
 
                         ModUtils.ExtractAndSendGif(gifUrl, sentBy);

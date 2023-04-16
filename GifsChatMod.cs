@@ -22,12 +22,11 @@ public class GifsChatMod : Mod
     internal static ServerConfig ServerConfig;
     internal static ClientConfig ClientConfig;
     internal static GifsChatMod Instance;
+
     public override void Load()
     {
         Instance = this;
     }
     public override void HandlePacket(BinaryReader reader, int whoAmI)
-    {
-        NetHandler.HandlePacket(reader, whoAmI);
-    }
+        => NetHandler.HandlePacket(reader, whoAmI);
 }
