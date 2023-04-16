@@ -1,5 +1,5 @@
-﻿using GifsChat.Models.Communicators;
-using GifsChat.Utils.Exceptions;
+﻿using System;
+using GifsChat.Utils;
 using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
@@ -28,7 +28,7 @@ public static class NetHandler
                     {
                         var p = GifsChatMod.Instance.GetPacket();
 
-                        p.Write((byte)2);
+                        p.Write((byte)PacketType.GifURL);
                         p.Write(reader.ReadString());
                         p.Write(reader.ReadString());
 
@@ -42,15 +42,13 @@ public static class NetHandler
                         if (!GifsChatMod.ClientConfig.GifsEnabled || !GifsChatMod.ServerConfig.GifsEnabled)
                             return;
 
-                        ICommunicator communicator = new TenorCommunicator();
-                        communicator.ExtractAndSendGif(gifUrl, sentBy);
+                        ModUtils.ExtractAndSendGif(gifUrl, sentBy);
                     }
                 }
-                catch (GifsChatException e)
+                catch (Exception e)
                 {
-                    Main.NewText(e.Message, Color.Orange);
+                    ModUtils.NewText(e.Message, true);
                 }
-                catch { }
                 break;
 
         }

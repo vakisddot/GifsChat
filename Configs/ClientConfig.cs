@@ -13,7 +13,7 @@ public class ClientConfig : ModConfig
         GifsChatMod.ClientConfig = this;
     }
 
-    [Header("GIFs Chat")]
+    [Header("GIFs in Chat")]
     [Label("Enable Gifs (Client-side)")]
     [DefaultValue(true)]
     public bool GifsEnabled;
@@ -25,20 +25,20 @@ public class ClientConfig : ModConfig
     public string TenorApiKey;
 
     [Label("Results Limit (1-20)")]
-    [Tooltip("Determines how many results Tenor will send you when requesting a GIF")]
+    [Tooltip("Determines how many results Tenor will send you when requesting a Gif")]
     [DefaultValue(10)]
     [Range(1, 20)]
     public int ResultsLimit;
 
-    [Header("GIF Appearance")]
+    [Header("Gif Appearance")]
     [Label("Scale (20-200)")]
-    [Tooltip("Sets the scale of all newly sent GIFs in chat")]
+    [Tooltip("Sets the scale of all newly sent Gifs in chat")]
     [DefaultValue(150)]
     [Range(20, 200)]
     public int WidthInChat;
 
     [Label("Opacity (0-1)")]
-    [Tooltip("Sets the opacity of all GIFs in chat")]
+    [Tooltip("Sets the opacity of all Gifs in chat")]
     [DefaultValue(0.75f)]
     [Range(0, 1)]
     public float Opacity;

@@ -13,18 +13,22 @@ public class ServerConfig : ModConfig
         GifsChatMod.ServerConfig = this;
     }
 
-    [Header("GIFs Chat")]
+    [Header("GIFs in Chat")]
     [Label("Enable Gifs (Server-side)")]
     [DefaultValue(true)]
     public bool GifsEnabled;
 
+    [Label("Allow Gifs By URL")]
+    [DefaultValue(false)]
+    public bool AllowGifsByUrl;
+
     [Header("Performance")]
-    [Label("GIF Lifetime (15-120 sec.)")]
+    [Label("Gif Lifetime (15-120 sec.)")]
     [DefaultValue(60)]
     [Range(15, 120)]
     public int GifLifetime;
 
-    [Label("Delay Between GIFs (5-15 sec.)")]
+    [Label("Delay Between Gifs (5-15 sec.)")]
     [DefaultValue(5)]
     [Range(5, 15)]
     public int GifSendDelay;

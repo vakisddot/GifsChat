@@ -7,6 +7,9 @@ using GifsChat.Models.Communicators;
 using Terraria.ID;
 using Terraria;
 using System.Linq;
+using System;
+using System.Text.RegularExpressions;
+using System.Net.Http;
 
 namespace GifsChat.Core;
 public class GifCommand : ModCommand
@@ -16,65 +19,91 @@ public class GifCommand : ModCommand
         => "gif";
     public override CommandType Type
         => CommandType.Chat;
-    public override string Description
-        => "Send a GIF in chat ('/gif apiKey' will send you to a site where you can get your own key)";
+    public override string Description => 
+        $"Sends a Gif in chat {Environment.NewLine}";
+    public override string Usage =>
+        $"{Environment.NewLine}" +
+        $" - \"/gif john xina\" will send a random gif of John Xina {Environment.NewLine}" +
+        $" - \"/gif https://.../john-xina.gif\" will send a specific gif of John Xina {Environment.NewLine}" +
+        $" - \"/gif api\" will send you to a site where you can get your own API key {Environment.NewLine}" +
+        $"(Note that when sending gifs by URL the URL must start with 'https://' and end with '.gif')" +
+        $"{Environment.NewLine}";
 
     public async override void Action(CommandCaller caller, string input, string[] args)
     {
-        if (!GifsChatMod.ClientConfig.GifsEnabled || !GifsChatMod.ServerConfig.GifsEnabled)
-        {
-            Main.NewText("[GIFsChat] GIFs are disabled!", Color.Orange);
-            return;
-        }
-
         if (args == null || !SanitizeInput(string.Join(' ', args)))
         {
-            Main.NewText("[GIFsChat] Invalid input!", Color.Orange);
+            ModUtils.NewText("Invalid input!");
             return;
         }
 
-        if (args[0] == "apiKey")
+        if (args[0].ToLower() == "api")
         {
             ModUtils.RerouteToApiSite();
             return;
         }
-
+        
         int msBetweenCommands = GifsChatMod.ServerConfig.GifSendDelay * 1000;
-
         if (_timeSinceLastCommand.ElapsedMilliseconds < msBetweenCommands)
         {
             int timeRemaining = (msBetweenCommands - (int)_timeSinceLastCommand.ElapsedMilliseconds) / 1000;
-            caller.Reply($"Must wait at least {timeRemaining} {(timeRemaining == 1 ? "second" : "seconds")} until next GIF!", Color.Yellow);
+            ModUtils.NewText($"Must wait at least {timeRemaining} {(timeRemaining == 1 ? "second" : "seconds")} until next Gif!");
             return;
         }
 
+        if (!GifsChatMod.ClientConfig.GifsEnabled || !GifsChatMod.ServerConfig.GifsEnabled)
+        {
+            ModUtils.NewText("Gifs are currently disabled!");
+            return;
+        }
+
+
         try
         {
-            string query = string.Join(' ', args);
+            string gifUrl = string.Empty;
 
-            ICommunicator communicator = new TenorCommunicator();
-
-            string gifUrl = await communicator.QueryGifUrl(query);
-            if (string.IsNullOrWhiteSpace(gifUrl))
+            if (Regex.IsMatch(args[0], @"^https://.*\.gif$"))
             {
-                Main.NewText("[GIFsChat] Failed to get valid URL from Tenor!", Color.Orange);
-                return;
+                if (GifsChatMod.ServerConfig.AllowGifsByUrl)
+                    gifUrl = args[0];
+                else
+                    ModUtils.NewText("Server does not allow Gifs to be sent by URL!");
+            }
+            else
+            {
+                string query = string.Join(' ', args);
+
+                ICommunicator communicator = new TenorCommunicator();
+
+                gifUrl = await communicator.QueryGifUrl(query);
             }
 
-            // Sends the GIF to all players
-            communicator.ExtractAndSendGif(gifUrl, Main.LocalPlayer.name);
-            if (Main.netMode is NetmodeID.MultiplayerClient)
+            if (!string.IsNullOrWhiteSpace(gifUrl))
             {
-                NetHandler.SendGifURLPacket(gifUrl, Main.LocalPlayer.name);
+                SendGif(gifUrl);
             }
-
+        }
+        catch (Exception e)
+        {
+            ModUtils.NewText(e.Message, true);
+        }
+        finally
+        {
             _timeSinceLastCommand.Restart();
         }
-        catch (GifsChatException e)
+    }
+
+    /// <summary>
+    /// Sends the Gif to all players
+    /// </summary>
+    private void SendGif(string gifUrl)
+    {
+        ModUtils.ExtractAndSendGif(gifUrl, Main.LocalPlayer.name);
+
+        if (Main.netMode is NetmodeID.MultiplayerClient)
         {
-            caller.Reply(e.Message, Color.Orange);
+            NetHandler.SendGifURLPacket(gifUrl, Main.LocalPlayer.name);
         }
-        catch { }
     }
 
     private bool SanitizeInput(string args)

@@ -1,43 +1,59 @@
-﻿using GifsChat.Utils.Exceptions;
+﻿using GifsChat.Core;
+using GifsChat.Utils.Exceptions;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Terraria;
+
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace GifsChat.Utils;
 
 public static class ModUtils
 {
+    public static async void ExtractAndSendGif(string gifUrl, string sentBy)
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            try
+            {
+                var gifStream = await client.GetStreamAsync(gifUrl);
+
+                var gifFramesStreams = await ExtractGifFrames(gifStream);
+                GifConverter.EnqueueGifFramesStreams(gifFramesStreams, sentBy, gifUrl);
+            }
+            catch (Exception e)
+            {
+                NewText("Failed to get or send Gif!", true);
+                NewText($"{e.Message}", true);
+            }
+        }
+    }
+
     public static async Task<T> DeserializeResults<T>(HttpResponseMessage response)
     {
         string json = await response.Content.ReadAsStringAsync();
 
         if (string.IsNullOrWhiteSpace(json))
         {
-            throw new GifsChatException($"Failed to deserialize response!");
+            ModUtils.NewText("Failed to deserialize response!", true);
+            return default;
         }
 
         return JsonConvert.DeserializeObject<T>(json);
     }
 
-    public static async Task<Stream> GetStreamFromUrl(string url)
-    {
-        Stream stream;
-
-        using (HttpClient client = new HttpClient())
-        {
-            stream = await client.GetStreamAsync(url);
-        }
-
-        return stream;
-    }
-
     // 90% of this was written by Bing AI lol
+    /// <summary>
+    /// Splits a Gif stream into an array of image streams
+    /// </summary>
     public static async Task<Stream[]> ExtractGifFrames(Stream gifStream)
     {
         var frames = new List<Stream>();
@@ -73,6 +89,12 @@ public static class ModUtils
         
         return frames.ToArray();
     }
+
+    /// <summary>
+    /// Sends a message to the chat
+    /// </summary>
+    public static void NewText(string message, bool isException = false) 
+        => Main.NewText($"[GifsChat] {message}", isException ? Color.DarkOrange : Color.Yellow);
 
     public static void RerouteToApiSite()
         => RerouteToSite("https://developers.google.com/tenor/guides/quickstart");
