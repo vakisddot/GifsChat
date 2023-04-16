@@ -1,15 +1,12 @@
 ﻿using Terraria.ModLoader;
 using GifsChat.Utils;
 using System.Diagnostics;
-using Microsoft.Xna.Framework;
-using GifsChat.Utils.Exceptions;
 using GifsChat.Models.Communicators;
 using Terraria.ID;
 using Terraria;
 using System.Linq;
 using System;
 using System.Text.RegularExpressions;
-using System.Net.Http;
 
 namespace GifsChat.Core;
 public class GifCommand : ModCommand

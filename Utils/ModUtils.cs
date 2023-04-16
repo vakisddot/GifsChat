@@ -1,5 +1,4 @@
 ﻿using GifsChat.Core;
-using GifsChat.Utils.Exceptions;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
