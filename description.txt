@@ -4,4 +4,3 @@ Gifs are a fun way to spice up your chat in Terraria. You can use them to react 
 Credits:
 - Cyrillya - Creator of the ImageChat mod
 - Tenor - GIF search engine
-- ImageSharp

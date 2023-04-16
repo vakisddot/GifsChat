@@ -20,12 +20,14 @@ public class ClientConfig : ModConfig
 
     [Header("API")]
     [Label("Tenor API Key")]
-    [Tooltip($"(Suggested) Use '/gif apiKey' to get your own instead of using the default one")]
+    [Tooltip($"(Suggested) Use \"/gif api\" to get your own instead of using the default one")]
     [DefaultValue("AIzaSyCDP8gN9eZCsFRrVC7vs0BvvFl6THnTm10")]
     public string TenorApiKey;
 
     [Label("Results Limit (1-20)")]
-    [Tooltip("Determines how many results Tenor will send you when requesting a Gif")]
+    [Tooltip(
+        "Determines how many results Tenor will send you when requesting a Gif\r\n" +
+        "One of N results will be randomly picked, so if this is set to 1, you will always send the same Gif for the same query")]
     [DefaultValue(10)]
     [Range(1, 20)]
     public int ResultsLimit;
@@ -45,11 +47,15 @@ public class ClientConfig : ModConfig
 
     [Header("Performance")]
     [Label("Skip Every 2nd Frame")]
-    [Tooltip("Turning this on is recommended for lower-end machines")]
+    [Tooltip(
+        "This will skip every second frame of a Gif, resulting in less memory usage, but worse animation\r\n" +
+        "Recommended for lower-end machines")]
     public bool SkipEverySecondFrame;
 
     [Label("Frame Limit (5-150)")]
-    [Tooltip("Determines the max amount of frames that will be extracted from a gif. Lower values recommended for lower-end machines")]
+    [Tooltip(
+        "Determines the max amount of frames that will be extracted from a Gif\r\n" +
+        "Lower values recommended for lower-end machines")]
     [DefaultValue(30)]
     [Range(5, 150)]
     public int FramesLimit;

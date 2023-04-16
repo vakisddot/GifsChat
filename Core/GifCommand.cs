@@ -21,7 +21,7 @@ public class GifCommand : ModCommand
         $"{Environment.NewLine}" +
         $" - \"/gif john xina\" will send a random gif of John Xina {Environment.NewLine}" +
         $" - \"/gif https://.../john-xina.gif\" will send a specific gif of John Xina {Environment.NewLine}" +
-        $" - \"/gif api\" will send you to a site where you can get your own API key {Environment.NewLine}" +
+        $" - \"/gif api\" will reroute you to a site where you can get your own API key {Environment.NewLine}" +
         $"{Environment.NewLine}";
 
     public async override void Action(CommandCaller caller, string input, string[] args)

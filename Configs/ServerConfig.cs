@@ -34,6 +34,7 @@ public class ServerConfig : ModConfig
     public int GifLifetime;
 
     [Label("Delay Between Gifs (5-15 sec.)")]
+    [Tooltip("Dictates the delay between Gifs for each player")]
     [DefaultValue(5)]
     [Range(5, 15)]
     public int GifSendDelay;
