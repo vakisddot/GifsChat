@@ -7,7 +7,6 @@ Use "/help gif" in the chat for instructions.
 [h1]Changelog[/h1]
 v0.2
 - You can now send Gifs by URL (enable in ServerConfig -> "Allow Gifs By URL")
-- Added support for transparent Gifs (can be a little broken tho)
 - "/help gif" will now give more information
 - Configs are now described better
 - Fixed some bugs and performance issues

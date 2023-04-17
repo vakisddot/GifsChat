@@ -59,7 +59,7 @@ public static class GifUtils
 
         using (var gif = await Image.LoadAsync<Rgba32>(gifStream))
         {
-            var totalFrameCount = gif.Frames.Count;
+            int totalFrameCount = gif.Frames.Count;
 
             if (totalFrameCount < 1)
                 return null;
@@ -76,7 +76,7 @@ public static class GifUtils
                     continue;
 
                 var currFrame = gif.Frames.CloneFrame(i);
-
+                
                 if (i == 0)
                 {
                     canvas = currFrame; // We set the canvas
@@ -93,7 +93,7 @@ public static class GifUtils
                 }
 
                 var frameStream = new MemoryStream();
-                await canvas.SaveAsPngAsync(frameStream);
+                await canvas.SaveAsGifAsync(frameStream);
 
                 frames.Add(frameStream);
             }

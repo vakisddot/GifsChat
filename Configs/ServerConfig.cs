@@ -41,6 +41,6 @@ public class ServerConfig : ModConfig
 
     [Header("Filter")]
     [Label("Content Filter")]
-    [DefaultValue(0)]
+    [DefaultValue(ContentFilter.High)]
     public ContentFilter ContentFilter;
 }

@@ -56,7 +56,7 @@ public class ClientConfig : ModConfig
     [Tooltip(
         "Determines the max amount of frames that will be extracted from a Gif\r\n" +
         "Lower values recommended for lower-end machines")]
-    [DefaultValue(30)]
+    [DefaultValue(50)]
     [Range(5, 150)]
     public int FramesLimit;
 }
