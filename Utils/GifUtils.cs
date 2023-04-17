@@ -61,8 +61,12 @@ public static class GifUtils
         {
             var totalFrameCount = gif.Frames.Count;
 
+            if (totalFrameCount < 1)
+                return null;
+
             // This is the canvas that will get drawn over after each iteration
             Image<Rgba32> canvas = null;
+            bool isTransparent = false;
 
             // Will break once every frame has been extracted or the frames limit has been reached
             for (int i = 0; i < totalFrameCount && frames.Count < framesLimit; i++)
@@ -73,7 +77,12 @@ public static class GifUtils
 
                 var currFrame = gif.Frames.CloneFrame(i);
 
-                if (i == 0) // We set the canvas
+                if (i == 0)
+                {
+                    canvas = currFrame; // We set the canvas
+                    isTransparent = canvas.IsTransparent();
+                }
+                else if (isTransparent)
                 {
                     canvas = currFrame;
                 }
@@ -84,7 +93,7 @@ public static class GifUtils
                 }
 
                 var frameStream = new MemoryStream();
-                await canvas.SaveAsGifAsync(frameStream);
+                await canvas.SaveAsPngAsync(frameStream);
 
                 frames.Add(frameStream);
             }
@@ -93,5 +102,21 @@ public static class GifUtils
         }
 
         return frames.ToArray();
+    }
+
+    private static bool IsTransparent(this Image<Rgba32> image)
+    {
+        for (int y = 0; y < image.Height; y++)
+        {
+            for (int x = 0; x < image.Width; x++)
+            {
+                if (image[x, y].A < 1)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

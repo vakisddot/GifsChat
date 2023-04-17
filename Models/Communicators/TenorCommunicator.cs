@@ -1,10 +1,8 @@
 ﻿using GifsChat.Models.Json;
 using GifsChat.Utils;
-using Microsoft.Xna.Framework;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Terraria;
 
 namespace GifsChat.Models.Communicators;
 
@@ -62,7 +60,8 @@ public class TenorCommunicator : ICommunicator
 
         using (HttpClient client = new HttpClient())
         {
-            response = await client.GetAsync(string.Format(TenorApiUrl, query, apiKey, ClientKey, resultsLimit, MediaFilter, contentFilter));
+            string url = string.Format(TenorApiUrl, query, apiKey, ClientKey, resultsLimit, MediaFilter, contentFilter);
+            response = await client.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
             {

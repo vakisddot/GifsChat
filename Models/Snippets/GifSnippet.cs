@@ -2,11 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
 using Terraria;
 using Terraria.UI.Chat;
-using Terraria.Graphics.Shaders;
 
 namespace GifsChat.Models.Snippets;
 
@@ -116,9 +114,11 @@ public class GifSnippet : TextSnippet, IImageSnippet
 
         if (!justCheckingString && color != Color.Black)
         {
+            float opacity = GifsChatMod.ClientConfig.Opacity;
+
             spriteBatch.Draw(
                 _frames[_currentFrameIndex], position, null, 
-                Color.White * GifsChatMod.ClientConfig.Opacity, 0f, Vector2.Zero, 
+                Color.White * opacity, 0f, Vector2.Zero, 
                 scale, SpriteEffects.None, 0f);
         }
 
