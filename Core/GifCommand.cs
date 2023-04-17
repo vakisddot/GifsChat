@@ -52,7 +52,6 @@ public class GifCommand : ModCommand
             return;
         }
 
-
         try
         {
             string gifUrl = string.Empty;
@@ -100,7 +99,7 @@ public class GifCommand : ModCommand
     /// </summary>
     private void SendGif(string gifUrl)
     {
-        ModUtils.ExtractAndSendGif(gifUrl, Main.LocalPlayer.name);
+        GifUtils.ExtractAndSendGif(gifUrl, Main.LocalPlayer.name);
 
         if (Main.netMode is NetmodeID.MultiplayerClient)
         {

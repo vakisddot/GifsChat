@@ -24,29 +24,24 @@ public static class NetHandler
             case (byte)PacketType.GifURL:
                 try
                 {
+                    string gifUrl = reader.ReadString();
+                    string sentBy = reader.ReadString();
+
                     // Server
                     if (Main.netMode is NetmodeID.Server)
                     {
-                        var p = GifsChatMod.Instance.GetPacket();
-
-                        p.Write((byte)PacketType.GifURL);
-                        p.Write(reader.ReadString());
-                        p.Write(reader.ReadString());
-
-                        p.Send(ignoreClient: whoAmI);
+                        // Sends the Gif to all clients except the original sender
+                        SendGifURLPacket(gifUrl, sentBy, whoAmI);
                     }
                     // Client
                     else
                     {
-                        string gifUrl = reader.ReadString();
-                        string sentBy = reader.ReadString();
-
                         if (string.IsNullOrWhiteSpace(gifUrl)
                             || !GifsChatMod.ClientConfig.GifsEnabled 
                             || !GifsChatMod.ServerConfig.GifsEnabled)
                             return;
 
-                        ModUtils.ExtractAndSendGif(gifUrl, sentBy);
+                        GifUtils.ExtractAndSendGif(gifUrl, sentBy);
                     }
                 }
                 catch (Exception e)
@@ -57,7 +52,8 @@ public static class NetHandler
 
         }
     }
-    public static void SendGifURLPacket(string url, string senderPlayerName)
+
+    public static void SendGifURLPacket(string url, string senderPlayerName, int whoAmI = -1)
     {
         var packet = GifsChatMod.Instance.GetPacket();
 
@@ -65,6 +61,6 @@ public static class NetHandler
         packet.Write(url);
         packet.Write(senderPlayerName);
 
-        packet.Send();
+        packet.Send(ignoreClient: whoAmI);
     }
 }
