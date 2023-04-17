@@ -71,10 +71,6 @@ public static class GifUtils
             // Will break once every frame has been extracted or the frames limit has been reached
             for (int i = 0; i < totalFrameCount && frames.Count < framesLimit; i++)
             {
-                // We skip adding every second frame if frameskip is on
-                if (skipEverySecondFrame && i % 2 == 1)
-                    continue;
-
                 var currFrame = gif.Frames.CloneFrame(i);
                 
                 if (i == 0)
@@ -91,6 +87,10 @@ public static class GifUtils
                     canvas.Mutate(c => c.DrawImage(currFrame, 1));
                     currFrame.Dispose();
                 }
+
+                // We skip adding every second frame if frameskip is on
+                if (skipEverySecondFrame && i % 2 == 1)
+                    continue;
 
                 var frameStream = new MemoryStream();
                 await canvas.SaveAsGifAsync(frameStream);

@@ -13,20 +13,10 @@ public class GifConverter : ModSystem
     private static Dictionary<uint, List<Texture2D>> s_awaitingGifs = new();
     private static Dictionary<uint, (string sentBy, string url)> s_gifDatas = new();
 
-    private const int StreamConvertDelay = 0;
-    private int _frameCounter;
-
     public override void PostUpdateEverything()
     {
-        TrySendGif();
-
-        if (_frameCounter >= StreamConvertDelay)
-        {
-            TryConvertFirstStream();
-            _frameCounter = 0;
-        }
-
-        _frameCounter++;
+        TrySendFirstGif();
+        TryConvertFirstStream();
     }
 
     /// <summary>
@@ -73,34 +63,37 @@ public class GifConverter : ModSystem
     }
 
     /// <summary>
-    /// Sends all fully converted Gifs in chat
+    /// Sends the first fully converted Gif in chat
     /// </summary>
-    private void TrySendGif()
+    private void TrySendFirstGif()
     {
-        foreach (var awaitingGif in s_awaitingGifs.Where(g => g.Value.Any()))
+        if (!s_awaitingGifs.Any())
+            return;
+        
+        // Get all Gifs that are ready to be sent. If none are found, return
+        var readyGifs = s_awaitingGifs.Where(kv => !s_awaitingStreams[kv.Key].Any());
+        if (!readyGifs.Any())
+            return;
+
+        var awaitingGif = readyGifs.First();
+
+        uint hash = awaitingGif.Key;
+        var queue = awaitingGif.Value;
+
+        try
         {
-            uint hash = awaitingGif.Key;
-            var queue = awaitingGif.Value;
+            Main.NewText($"<{s_gifDatas[hash].sentBy}>");
+            RemadeChatMonitorHooks.SendTexture(queue.ToArray(), s_gifDatas[hash].url);
+        }
+        catch { }
+        finally
+        {
+            // Once a gif has been successfully sent, we delete it from our caches
+            s_awaitingStreams.Remove(hash);
+            s_awaitingGifs.Remove(hash);
+            s_gifDatas.Remove(hash);
 
-            if (s_awaitingStreams[hash].Any())
-                continue;
-
-            try
-            {
-                //Main.NewText($"<{s_gifSenders[hash]}_{hash}>");
-                Main.NewText($"<{s_gifDatas[hash].sentBy}>");
-                RemadeChatMonitorHooks.SendTexture(queue.ToArray(), s_gifDatas[hash].url);
-            }
-            catch { }
-            finally
-            {
-                // Once a gif has been successfully sent, we delete it from our caches
-                s_awaitingStreams.Remove(hash);
-                s_awaitingGifs.Remove(hash);
-                s_gifDatas.Remove(hash);
-
-                //Main.NewText(s_awaitingGifs.Count);
-            }
+            //Main.NewText(s_awaitingGifs.Count);
         }
     }
 }
