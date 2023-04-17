@@ -5,10 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using System;
+using GifsChat.Utils;
 
 namespace GifsChat.Core;
+
 public class GifConverter : ModSystem
 {
+    private static Random s_rand = new();
     private static Dictionary<uint, Queue<Stream>> s_awaitingStreams = new();
     private static Dictionary<uint, List<Texture2D>> s_awaitingGifs = new();
     private static Dictionary<uint, (string sentBy, string url)> s_gifDatas = new();
@@ -26,7 +29,7 @@ public class GifConverter : ModSystem
     {
         // We generate a unique hashcode for every new Gif so that if two Gifs are received at the same time, 
         // they will be dealt with separately
-        uint hashCode = (uint)(DateTime.Now.GetHashCode() ^ sentBy.GetHashCode());
+        uint hashCode = (uint)(DateTime.Now.GetHashCode() ^ sentBy.GetHashCode() ^ s_rand.Next());
 
         s_awaitingStreams.Add(hashCode, new());
         s_awaitingGifs.Add(hashCode, new());
@@ -55,11 +58,20 @@ public class GifConverter : ModSystem
         uint hash = awaitingStream.Key;
         var queue = awaitingStream.Value;
 
-        var stream = queue.Dequeue();
-
-        s_awaitingGifs[hash].Add(Texture2D.FromStream(Main.instance.GraphicsDevice, stream));
-
-        stream.Dispose();
+        using (var stream = queue.Dequeue())
+        {
+            try
+            {
+                var tex2d = Texture2D.FromStream(Main.instance.GraphicsDevice, stream);
+                s_awaitingGifs[hash].Add(tex2d);
+            }
+            catch (Exception e)
+            {
+                ModUtils.NewText("Failed to convert stream into Texture2D!", true);
+                ModUtils.NewText(e.GetType().ToString(), true);
+                ModUtils.NewText(e.Message, true);
+            }
+        }
     }
 
     /// <summary>
@@ -85,7 +97,12 @@ public class GifConverter : ModSystem
             Main.NewText($"<{s_gifDatas[hash].sentBy}>");
             RemadeChatMonitorHooks.SendTexture(queue.ToArray(), s_gifDatas[hash].url);
         }
-        catch { }
+        catch (Exception e)
+        {
+            ModUtils.NewText("Failed to send fully-converted Gif in chat!", true);
+            ModUtils.NewText(e.GetType().ToString(), true);
+            ModUtils.NewText(e.Message, true);
+        }
         finally
         {
             // Once a gif has been successfully sent, we delete it from our caches

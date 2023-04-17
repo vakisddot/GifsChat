@@ -8,6 +8,7 @@ using System.Linq;
 using System;
 
 namespace GifsChat.Core;
+
 public class GifCommand : ModCommand
 {
     private Stopwatch _timeSinceLastCommand = Stopwatch.StartNew();
