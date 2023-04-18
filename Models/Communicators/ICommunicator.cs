@@ -5,7 +5,9 @@ namespace GifsChat.Models.Communicators;
 
 public interface ICommunicator
 {
+    /// <summary>
+    /// Queries the search engine
+    /// </summary>
+    /// <returns>URL if response was OK, null otherwise</returns>
     Task<string> QueryGifUrl(string query);
-    Task<HttpResponseMessage> GetResponse(string query);
-    void ExtractAndSendGif(string gifUrl, string sentBy);
 }

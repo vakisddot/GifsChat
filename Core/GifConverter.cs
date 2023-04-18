@@ -5,30 +5,45 @@ using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using System;
+using GifsChat.Utils;
 
 namespace GifsChat.Core;
 
 public class GifConverter : ModSystem
 {
+    private static Random s_rand = new();
     private static Dictionary<uint, Queue<Stream>> s_awaitingStreams = new();
     private static Dictionary<uint, List<Texture2D>> s_awaitingGifs = new();
     private static Dictionary<uint, (string sentBy, string url)> s_gifDatas = new();
 
-    private const int StreamConvertDelay = 0;
-    private int _frameCounter;
-
     public override void PostUpdateEverything()
     {
-        TrySendGif();
-
-        if (_frameCounter >= StreamConvertDelay)
-        {
-            TryConvertFirstStream();
-            _frameCounter = 0;
-        }
-
-        _frameCounter++;
+        TrySendFirstGif();
+        TryConvertFirstStream();
     }
+
+    /// <summary>
+    /// Enqueues an array of Gif frame streams for conversion. Once converted, they will be sent to chat
+    /// </summary>
+    public static void EnqueueGifFramesStreams(Stream[] streams, string sentBy, string url)
+    {
+        // We generate a unique hashcode for every new Gif so that if two Gifs are received at the same time, 
+        // they will be dealt with separately
+        uint hashCode = (uint)(DateTime.Now.GetHashCode() ^ sentBy.GetHashCode() ^ s_rand.Next());
+
+        s_awaitingStreams.Add(hashCode, new());
+        s_awaitingGifs.Add(hashCode, new());
+        s_gifDatas.Add(hashCode, (sentBy, url));
+
+        foreach (var stream in streams)
+        {
+            s_awaitingStreams[hashCode].Enqueue(stream);
+        }
+    }
+
+    /// <summary>
+    /// Converts the first awaiting frame into a Texture2D
+    /// </summary>
     private void TryConvertFirstStream()
     {
         if (!s_awaitingStreams.Any())
@@ -43,51 +58,59 @@ public class GifConverter : ModSystem
         uint hash = awaitingStream.Key;
         var queue = awaitingStream.Value;
 
-        var stream = queue.Dequeue();
-
-        s_awaitingGifs[hash].Add(Texture2D.FromStream(Main.instance.GraphicsDevice, stream));
-
-        stream.Dispose();
-    }
-    private void TrySendGif()
-    {
-        foreach (var awaitingGif in s_awaitingGifs.Where(g => g.Value.Any()))
+        using (var stream = queue.Dequeue())
         {
-            uint hash = awaitingGif.Key;
-            var queue = awaitingGif.Value;
-
-            if (s_awaitingStreams[hash].Any())
-                continue;
-
             try
             {
-                //Main.NewText($"<{s_gifSenders[hash]}_{hash}>");
-                Main.NewText($"<{s_gifDatas[hash].sentBy}>");
-                RemadeChatMonitorHooks.SendTexture(queue.ToArray(), s_gifDatas[hash].url);
+                var tex2d = Texture2D.FromStream(Main.instance.GraphicsDevice, stream);
+                s_awaitingGifs[hash].Add(tex2d);
             }
-            catch { }
-            finally
+            catch (Exception e)
             {
-                // Once a gif has been successfully sent, we delete it from our caches
-                s_awaitingStreams.Remove(hash);
-                s_awaitingGifs.Remove(hash);
-                s_gifDatas.Remove(hash);
-
-                //Main.NewText(s_awaitingGifs.Count);
+                ModUtils.NewText("Failed to convert stream into Texture2D!", true);
+                ModUtils.NewText(e.GetType().ToString(), true);
+                ModUtils.NewText(e.Message, true);
             }
         }
     }
-    public static void EnqueueGifFramesStreams(Stream[] streams, string sentBy, string url)
+
+    /// <summary>
+    /// Sends the first fully converted Gif in chat
+    /// </summary>
+    private void TrySendFirstGif()
     {
-        uint hashCode = (uint)(DateTime.Now.GetHashCode() ^ sentBy.GetHashCode());
+        if (!s_awaitingGifs.Any())
+            return;
+        
+        // Get all Gifs that are ready to be sent. If none are found, return
+        var readyGifs = s_awaitingGifs.Where(kv => !s_awaitingStreams[kv.Key].Any());
+        if (!readyGifs.Any())
+            return;
 
-        s_awaitingStreams.Add(hashCode, new());
-        s_awaitingGifs.Add(hashCode, new());
-        s_gifDatas.Add(hashCode, (sentBy, url));
+        var awaitingGif = readyGifs.First();
 
-        foreach (var stream in streams)
+        uint hash = awaitingGif.Key;
+        var queue = awaitingGif.Value;
+
+        try
         {
-            s_awaitingStreams[hashCode].Enqueue(stream);
+            Main.NewText($"<{s_gifDatas[hash].sentBy}>");
+            RemadeChatMonitorHooks.SendTexture(queue.ToArray(), s_gifDatas[hash].url);
+        }
+        catch (Exception e)
+        {
+            ModUtils.NewText("Failed to send fully-converted Gif in chat!", true);
+            ModUtils.NewText(e.GetType().ToString(), true);
+            ModUtils.NewText(e.Message, true);
+        }
+        finally
+        {
+            // Once a gif has been successfully sent, we delete it from our caches
+            s_awaitingStreams.Remove(hash);
+            s_awaitingGifs.Remove(hash);
+            s_gifDatas.Remove(hash);
+
+            //Main.NewText(s_awaitingGifs.Count);
         }
     }
 }

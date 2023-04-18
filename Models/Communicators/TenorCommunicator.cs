@@ -1,14 +1,14 @@
-﻿using GifsChat.Core;
-using GifsChat.Models.Json;
+﻿using GifsChat.Models.Json;
 using GifsChat.Utils;
-using Microsoft.Xna.Framework;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Terraria;
 
 namespace GifsChat.Models.Communicators;
 
+/// <summary>
+/// Provides a way to communicate with Tenor
+/// </summary>
 public class TenorCommunicator : ICommunicator
 {
     // Search parameters
@@ -21,7 +21,9 @@ public class TenorCommunicator : ICommunicator
 
     public async Task<string> QueryGifUrl(string query)
     {
-        if (!GifsChatMod.ClientConfig.GifsEnabled || !GifsChatMod.ServerConfig.GifsEnabled)
+        if (string.IsNullOrWhiteSpace(query)
+            || !GifsChatMod.ClientConfig.GifsEnabled 
+            || !GifsChatMod.ServerConfig.GifsEnabled)
             return null;
 
         var response = await GetResponse(query);
@@ -30,57 +32,53 @@ public class TenorCommunicator : ICommunicator
             return null;
 
         var results = await ModUtils.DeserializeResults<TenorResults>(response);
-        var gifUrl = results.GetRandomResult().GetFormat(FormatType.TinyGif).Url;
+
+        // Selects a random Gif URL from the results
+        var gifUrl = results?
+            .GetRandomResult()
+            .GetFormat(FormatType.TinyGif)
+            .Url;
 
         return gifUrl;
     }
 
-    public async void ExtractAndSendGif(string gifUrl, string sentBy)
+    /// <summary>
+    /// Sends a GET request to the search engine. Does NOT check if input is valid
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns>Response message if OK, null otherwise</returns>
+    private async Task<HttpResponseMessage> GetResponse(string query)
     {
-        var gifStream = await ModUtils.GetStreamFromUrl(gifUrl);
-        var gifFramesStreams = await ModUtils.ExtractGifFrames(gifStream);
+        string apiKey = GifsChatMod.ClientConfig.TenorApiKey;
+        int resultsLimit = GifsChatMod.ClientConfig.ResultsLimit;
 
-        GifConverter.EnqueueGifFramesStreams(gifFramesStreams, sentBy, gifUrl);
-    }
-
-    public async Task<HttpResponseMessage> GetResponse(string query)
-    {
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            Main.NewText("[GIFsChat] Empty request!", Color.Orange);
-            return null;
-        }
-
+        string contentFilter = GifsChatMod.ServerConfig.ContentFilter
+            .ToString()
+            .ToLower();
+            
         HttpResponseMessage response;
 
         using (HttpClient client = new HttpClient())
         {
-            string apiKey = GifsChatMod.ClientConfig.TenorApiKey;
-            int resultsLimit = GifsChatMod.ClientConfig.ResultsLimit;
-
-            string contentFilter = GifsChatMod.ServerConfig.ContentFilter
-                .ToString()
-                .ToLower();
-
-            response = await client.GetAsync(string.Format(TenorApiUrl, query, apiKey, ClientKey, resultsLimit, MediaFilter, contentFilter));
+            string url = string.Format(TenorApiUrl, query, apiKey, ClientKey, resultsLimit, MediaFilter, contentFilter);
+            response = await client.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
             {
                 StringBuilder sb = new();
 
-                sb.AppendLine($"[GIFsChat] Failed to get OK response from Tenor!");
-
+                sb.AppendLine($"Failed to get OK response from Tenor!");
                 if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
                 {
-                    sb.AppendLine($"  Make sure to setup your API key in the mod config.");
-                    sb.AppendLine($"  Use '/gif apiKey' to get a key");
+                    sb.AppendLine($"  Make sure to setup your API key in the mod config!");
+                    sb.AppendLine($"  Use '/gif apiKey' to get your own key");
                 }
                 else
                 {
                     sb.AppendLine($" Status code {(int)response.StatusCode} ({response.StatusCode}).");
                 }
 
-                Main.NewText(sb.ToString().TrimEnd(), Color.Orange);
+                ModUtils.NewText(sb.ToString().TrimEnd(), true);
                 return null;
             }
         }
