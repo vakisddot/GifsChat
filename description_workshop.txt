@@ -1,5 +1,7 @@
 Also make sure to check out [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2858293378]World Country Flags[/url]
 
+Now available for 1.4.4!
+
 Have you ever thought [i]"You know what Terraria is missing? Gifs."[/i] (Tbh most likely not, but anyways, now you have gifs in Terraria!!)
 Gifs are a fun way to spice up your chat in Terraria. You can use them to react to events, send memes, pollute the chat with garbage or to be cringy in general.
 Use "/help gif" in the chat for instructions.

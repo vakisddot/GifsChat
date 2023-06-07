@@ -9,8 +9,8 @@ using Terraria.GameContent;
 using Terraria.GameContent.UI.Chat;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
-using OnChat = On.Terraria.GameContent.UI.Chat.RemadeChatMonitor;
-using OnContainer = On.Terraria.UI.Chat.ChatMessageContainer;
+using OnChat = Terraria.GameContent.UI.Chat.On_RemadeChatMonitor;
+using OnContainer = Terraria.UI.Chat.On_ChatMessageContainer;
 
 namespace GifsChat.Core;
 

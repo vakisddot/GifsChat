@@ -14,7 +14,7 @@ public class ServerConfig : ModConfig
         GifsChatMod.ServerConfig = this;
     }
 
-    [Header("GIFs in Chat")]
+    [Header("GIFs-in-Chat")]
     [Label("Enable Gifs (Server-side)")]
     [DefaultValue(true)]
     public bool GifsEnabled;

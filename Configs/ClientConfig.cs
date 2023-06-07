@@ -13,7 +13,7 @@ public class ClientConfig : ModConfig
         GifsChatMod.ClientConfig = this;
     }
 
-    [Header("GIFs in Chat")]
+    [Header("GIFs-in-Chat")]
     [Label("Enable Gifs (Client-side)")]
     [DefaultValue(true)]
     public bool GifsEnabled;
@@ -32,7 +32,7 @@ public class ClientConfig : ModConfig
     [Range(1, 20)]
     public int ResultsLimit;
 
-    [Header("Gif Appearance")]
+    [Header("Gif-Appearance")]
     [Label("Scale (20-200)")]
     [Tooltip("Sets the scale of all newly sent Gifs in chat")]
     [DefaultValue(150)]

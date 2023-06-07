@@ -1,0 +1,94 @@
+Mods: {
+	GifsChat: {
+		Configs: {
+			ClientConfig: {
+				DisplayName: Client Config
+
+				GifsEnabled: {
+					Label: Enable Gifs (Client-side)
+					Tooltip: ""
+				}
+
+				TenorApiKey: {
+					Label: Tenor API Key
+					Tooltip: (Suggested) Use \"/gif api\" to get your own instead of using the default one
+				}
+
+				ResultsLimit: {
+					Label: Results Limit (1-20)
+					Tooltip: Determines how many results Tenor will send you when requesting a Gif. One of N results will be randomly picked, so if this is set to 1, you will always send the same Gif for the same query
+				}
+
+				WidthInChat: {
+					Label: Scale (20-200)
+					Tooltip: Sets the scale of all newly sent Gifs in chat
+				}
+
+				Opacity: {
+					Label: Opacity (0-1)
+					Tooltip: Sets the opacity of all Gifs in chat
+				}
+
+				SkipEverySecondFrame: {
+					Label: Skip Every 2nd Frame
+					Tooltip: This will skip every second frame of a Gif, resulting in better performance, but worse animation. Recommended for lower-end machines
+				}
+
+				FramesLimit: {
+					Label: Frame Limit (5-150)
+					Tooltip: Determines the max amount of frames that will be extracted from a Gif. Lower values recommended for lower-end machines
+				}
+
+				Headers: {
+					Performance: Performance
+					Gif-Appearance: Gif Appearance
+					API: API
+					GIFs-in-Chat: GIFs in Chat
+				}
+			}
+
+			ServerConfig: {
+				DisplayName: Server Config
+
+				GifsEnabled: {
+					Label: Enable Gifs (Server-side)
+					Tooltip: ""
+				}
+
+				AllowGifsByUrl: {
+					Label: Allow Gifs By URL
+					Tooltip: Gifs sent by URL can be LARGE in size and contain UNFILTERED content! Turning this on is NOT recommended, especially in servers where strangers can join!
+				}
+
+				GifLifetime: {
+					Label: Gif Lifetime (15-120 sec.)
+					Tooltip: Dictates how long a Gif will stay in chat until it gets removed
+				}
+
+				GifSendDelay: {
+					Label: Delay Between Gifs (5-15 sec.)
+					Tooltip: Dictates the delay between Gifs for each player
+				}
+
+				ContentFilter: {
+					Label: Content Filter
+					Tooltip: ""
+				}
+
+				Headers: {
+					Filter: Filter
+					Performance: Performance
+					GIFs-in-Chat: GIFs in Chat
+				}
+			}
+
+			ContentFilter: {
+				High.Label: High
+				Medium.Label: Medium
+				Low.Label: Low
+				Off.Label: Off
+				Tooltip: ""
+			}
+		}
+	}
+}
