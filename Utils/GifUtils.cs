@@ -23,11 +23,16 @@ public static class GifUtils
             {
                 gifStream = await client.GetStreamAsync(gifUrl);
             }
+            catch (HttpRequestException e)
+            {
+                ModUtils.NewText($"HTTP error while getting gif: {e.StatusCode}", true);
+                ModUtils.NewText(e.Message, true);
+                return;
+            }
             catch (Exception e)
             {
-                ModUtils.NewText("Failed to get Gif from URL!", true);
-                ModUtils.NewText($"{e.GetType()}", true);
-                ModUtils.NewText($"{e.Message}", true);
+                ModUtils.NewText("General error while getting gif.", true);
+                ModUtils.NewText(e.Message, true);
                 return;
             }
         }

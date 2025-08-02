@@ -28,9 +28,6 @@ public static class ModUtils
     public static void NewText(string message, bool isException = false) 
         => Main.NewText($"[GifsChat] {message}", isException ? Color.DarkOrange : Color.Yellow);
 
-    public static void RerouteToApiSite()
-        => RerouteToSite("https://developers.google.com/tenor/guides/quickstart");
-
     public static void RerouteToSite(string url)
         => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 }

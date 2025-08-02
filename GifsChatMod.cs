@@ -27,6 +27,7 @@ public class GifsChatMod : Mod
     {
         Instance = this;
     }
+
     public override void HandlePacket(BinaryReader reader, int whoAmI)
         => NetHandler.HandlePacket(reader, whoAmI);
 }

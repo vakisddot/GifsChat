@@ -18,12 +18,6 @@ public class ClientConfig : ModConfig
     [DefaultValue(true)]
     public bool GifsEnabled;
 
-    [Header("API")]
-    [Label("Tenor API Key")]
-    [Tooltip($"(Suggested) Use \"/gif api\" to get your own instead of using the default one")]
-    [DefaultValue("AIzaSyCDP8gN9eZCsFRrVC7vs0BvvFl6THnTm10")]
-    public string TenorApiKey;
-
     [Label("Results Limit (1-20)")]
     [Tooltip(
         "Determines how many results Tenor will send you when requesting a Gif\r\n" +

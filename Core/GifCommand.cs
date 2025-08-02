@@ -20,10 +20,10 @@ public class GifCommand : ModCommand
         => $"Sends a Gif in chat {Environment.NewLine}";
     public override string Usage =>
         $"{Environment.NewLine}" +
-        $" - \"/gif john xina\" will send a random gif of John Xina {Environment.NewLine}" +
-        $" - \"/gif https://.../john-xina.gif\" will send a specific gif of John Xina {Environment.NewLine}" +
-        $" - \"/gif api\" will reroute you to a site where you can get your own API key {Environment.NewLine}" +
+        $" - \"/gif tung tung sahur\" will send a random gif of Tung Tung Sahur {Environment.NewLine}" +
+        $" - \"/gif https://.../tung-tung-sahur-2.gif\" will send a specific gif of Tung Tung Sahur {Environment.NewLine}" +
         $"{Environment.NewLine}";
+    public override bool IsCaseSensitive => true;
 
     public async override void Action(CommandCaller caller, string input, string[] args)
     {
@@ -33,12 +33,6 @@ public class GifCommand : ModCommand
             return;
         }
 
-        if (args[0].ToLower() == "api")
-        {
-            ModUtils.RerouteToApiSite();
-            return;
-        }
-        
         int msBetweenCommands = GifsChatMod.ServerConfig.GifSendDelay * 1000;
         if (_timeSinceLastCommand.ElapsedMilliseconds < msBetweenCommands)
         {
