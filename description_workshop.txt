@@ -4,6 +4,14 @@ Have you ever thought [i]"You know what Terraria is missing? Gifs."[/i] (Tbh mos
 Gifs are a fun way to spice up your chat in Terraria. You can use them to react to events, send memes, pollute the chat with garbage or to be cringy in general.
 Use "/help gif" in the chat for instructions.
 
+[h1]PRIVACY NOTICE[/h1]
+As of version 0.3, all requests to Tenor are proxied through a server that I operate.
+This was implemented so that the users are no longer required to manage API keys manually.
+Your searches can and will be logged for analytics, moderation and abuse prevention.
+The data that may be included in said logs includes a timestamp, your search query and your internet protocol address.
+All logs are stored securely and deleted automatically in 7 days.
+Logs are not sold or shared with third parties.
+
 [h1]Changelog[/h1]
 v0.3
 - API key now handled automatically
